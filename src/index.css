@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;500;700&display=swap');
+
+@tailwind base;
+@tailwind utilities;
+@tailwind components;
+
+@layer base {
+    :root {
+        font-family: 'Ubuntu', system-ui, Avenir, Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+        font-weight: 400;
+
+        color-scheme: light dark;
+        color: rgba(255, 255, 255, 0.87);
+        background-color: #242424;
+
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    a {
+        font-weight: 500;
+        color: #646cff;
+        text-decoration: inherit;
+    }
+
+    a:hover {
+        color: #535bf2;
+    }
+
+    body {
+        margin: 0;
+        display: flex;
+        min-width: 320px;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 1.6em;
+        line-height: 1.1;
+        font-weight: bold;
+    }
+
+    button {
+        border: 1px solid transparent;
+        font-size: 1em;
+        font-weight: 500;
+        font-family: inherit;
+        background-color: #1a1a1a;
+        cursor: pointer;
+        transition: border-color 0.25s;
+    }
+
+    td, th {
+        @apply
+        bordered px-4 py-0.5
+    }
+
+    th {
+        @apply
+        text-base
+    }
+
+    tr:nth-child(even) {
+        background-color: #e8e8e8;
+    }
+
+    tr:nth-child(odd) {
+        background-color: white;
+    }
+
+    form {
+        @apply
+        py-2 mt-2
+    }
+    form div {
+        @apply
+        mb-2 flex flex-col gap-2
+    }
+    form input[type="submit"] {
+        @apply
+        bg-green-700/80 text-white cursor-pointer
+    }
+    form select {
+        @apply
+        bordered px-2
+    }
+    form label {
+        @apply
+        flex justify-between
+    }
+
+    input {
+        @apply
+        bordered rounded-sm shadow-sm px-2 py-0.5
+    }
+
+    .table-header {
+        @apply
+        mb-4 text-xl font-light
+    }
+
+    .view-table-mode {
+        @apply
+        centered
+    }
+    .view-table-mode button {
+        @apply
+        bg-gray-300 px-2 py-0.5
+    }
+}
+
+@layer components {
+    #root {
+        @apply
+        w-screen
+    }
+
+    .App {
+        @apply
+        h-[96vh]
+    }
+
+    .centered {
+        @apply
+        flex justify-center items-center
+    }
+
+    .bordered {
+        @apply
+        border-[1px] border-gray-300
+    }
+
+    #header-block {
+        @apply
+        w-full px-8 py-4 bg-gray-200 flex justify-between items-center
+    }
+
+    #header-block a {
+        @apply
+        text-black
+    }
+
+    .additional-col {
+        @apply
+        duration-100
+    }
+    .additional-col button {
+        @apply
+        w-full
+    }
+    .additional-col:hover {
+        @apply
+        bg-red-300/80
+    }
+    .view-table-mode button {
+        @apply
+        transition-all duration-200
+    }
+    .view-table-mode button.selected {
+        @apply
+        bg-green-600/80 text-white
+    }
+    .view-table-mode button:hover {
+        @apply
+        bg-green-600/80 text-white
+    }
+    .view-table-mode button:first-child {
+        @apply
+        rounded-l-md
+    }
+    .view-table-mode button:last-child {
+        @apply
+        rounded-r-md
+    }
+    .view-table-mode button:not(:last-child) {
+        @apply
+        border-r-gray-400
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        color: #213547;
+        background-color: #ffffff;
+    }
+
+    a:hover {
+        color: #747bff;
+    }
+
+    button {
+        background-color: #f9f9f9;
+    }
+}
