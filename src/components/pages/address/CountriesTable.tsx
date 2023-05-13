@@ -18,6 +18,7 @@ function CountriesTable() {
             inputFields={[
                 <input type="text" name="title" id="title" placeholder="Название"/>
             ]}
+            searchableFieldTitles={["title"]}
         />
     );
 }

@@ -181,6 +181,15 @@
         @apply
         border-r-gray-400
     }
+    .table-subheader {
+        @apply
+        relative
+    }
+    .table-subheader .search-sign-block {
+        @apply
+        absolute w-full h-full centered top-0 left-0 font-bold flex items-center
+        justify-end text-xl
+    }
 }
 
 @media (prefers-color-scheme: light) {

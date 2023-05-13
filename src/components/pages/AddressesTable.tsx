@@ -135,6 +135,7 @@ function AddressesTable() {
                         target.flatNumber.value
                     )
                 }}
+                searchableFieldTitles={[]}
             />
         </div>
     );

@@ -18,6 +18,7 @@ function CategoriesTable() {
             inputFields={[
                 <input type="text" name="title" id="title" placeholder="Название категории"/>
             ]}
+            searchableFieldTitles={["title"]}
         />
     );
 }

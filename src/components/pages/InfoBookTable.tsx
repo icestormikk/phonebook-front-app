@@ -125,6 +125,7 @@ function InfoBookTable() {
                         target.personID.value, target.categoryID.value, target.addressID.value
                     )
                 }}
+                searchableFieldTitles={["phone", "email", "isqid"]}
             />
         </div>
     );

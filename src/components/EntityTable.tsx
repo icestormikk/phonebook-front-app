@@ -7,7 +7,8 @@ interface EntityTableProps {
     onFetch: (...args: Array<any>) => Promise<AxiosResponse<any, any>>,
     onDelete: (...args: Array<any>) => Promise<AxiosResponse<any, any>>,
     onAdd: (event: FormEvent<HTMLFormElement>) => any,
-    inputFields: Array<JSX.Element>
+    inputFields: Array<JSX.Element>,
+    searchableFieldTitles: Array<string>
 }
 
 function EntityTable(props: EntityTableProps) {
@@ -75,6 +76,7 @@ function EntityTable(props: EntityTableProps) {
                             onDelete={deleteAndRefreshData}
                             inputFields={props.inputFields}
                             onAdd={addAndRefreshData}
+                            searchableFieldTitles={props.searchableFieldTitles}
                         />
                     ) : (
                         <p className="text-red-300">
