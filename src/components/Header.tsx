@@ -1,8 +1,15 @@
 import React from 'react';
 import {Link} from "react-router-dom";
 import HeaderTab from "./HeaderTab";
+import {HttpStatusCode} from "axios";
+import {ping} from "../axios";
 
+/**
+ * The component that displays the site header
+ * @constructor
+ */
 function Header() {
+    const [status, setStatus] = React.useState<HttpStatusCode|undefined>(undefined)
     const tabs = React.useMemo(
         () => {
             return [
@@ -34,9 +41,25 @@ function Header() {
                 },
                 {
                     title: 'Телефонная книга',
-                    address: '/infos'
+                    address: '/infos',
+                    variants: [
+                        {
+                            title: 'История изменений',
+                            subAddress: '/history'
+                        }
+                    ]
                 }
             ]
+        },
+        []
+    )
+
+    React.useEffect(
+        () => {
+            ping()
+                .then((res) => {
+                    setStatus(res.status)
+                })
         },
         []
     )
@@ -49,7 +72,13 @@ function Header() {
             <div className="centered gap-4 uppercase">
                 {
                     tabs.map((tab, index) => (
-                        <HeaderTab key={index} title={tab.title} address={tab.address} variants={tab.variants}/>
+                        <HeaderTab
+                            key={index}
+                            title={tab.title}
+                            address={tab.address}
+                            variants={tab.variants}
+                            isLocked={status !== 200}
+                        />
                     ))
                 }
             </div>

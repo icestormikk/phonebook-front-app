@@ -1,14 +1,25 @@
 import React from 'react';
 import {Link} from "react-router-dom";
 import {AiFillCaretDown, AiOutlineCaretUp} from "react-icons/ai";
+import {HiOutlineLockClosed} from "react-icons/hi";
 
 interface HeaderTabProps {
     title: string,
     address: string,
+    isLocked?: boolean
     variants?: Array<{title: string, subAddress: string}>
 }
 
-function HeaderTab({title, address, variants}: HeaderTabProps) {
+/**
+ * The structural unit of the site header contains a link to one
+ * page of the site, as well as subsections with their own links
+ * @param title title of the section with a link
+ * @param address the address to which the user will go when clicking on the link
+ * @param isLocked a parameter indicating whether a click on a link is allowed
+ * @param variants a set of sublinks
+ * @constructor
+ */
+function HeaderTab({title, address, isLocked = false, variants}: HeaderTabProps) {
     const ref = React.useRef<HTMLDivElement>(null)
     const [isOpen, setIsOpen] = React.useState(false)
 
@@ -28,19 +39,30 @@ function HeaderTab({title, address, variants}: HeaderTabProps) {
     return (
         <div ref={ref} className="centered relative gap-0.5">
             <div className="centered gap-0.5">
-                <Link to={address}>
-                    {title}
-                </Link>
                 {
-                    variants && (
-                        <button
-                            type="button"
-                            onClick={() => setIsOpen((prevState) => !prevState)}
-                        >
+                    isLocked ? (
+                        <div className="centered gap-2">
+                            <p>{title}</p>
+                            <HiOutlineLockClosed/>
+                        </div>
+                    ) : (
+                        <>
+                            <Link to={address}>
+                                {title}
+                            </Link>
                             {
-                                isOpen ? <AiOutlineCaretUp/> : <AiFillCaretDown/>
+                                variants && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsOpen((prevState) => !prevState)}
+                                    >
+                                        {
+                                            isOpen ? <AiOutlineCaretUp/> : <AiFillCaretDown/>
+                                        }
+                                    </button>
+                                )
                             }
-                        </button>
+                        </>
                     )
                 }
             </div>

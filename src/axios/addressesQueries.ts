@@ -22,3 +22,12 @@ export async function addAddress(
         {countryID, cityID, streetID, houseNumber, flatNumber}
     )
 }
+
+export async function updateAddress(
+    id: number, countryID: number, cityID: number, streetID: number, houseNumber?: number, flatNumber?: number,
+) {
+    return await axiosInstance.put(
+        ADDRESSES_URL,
+        {id, countryID, cityID, streetID, houseNumber, flatNumber}
+    )
+}

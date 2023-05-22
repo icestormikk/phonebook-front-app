@@ -13,3 +13,7 @@ export async function removeCategoryById(id: number) {
 export async function addCategory(title: string) {
     return await axiosInstance.post(CATEGORIES_URL, {title})
 }
+
+export async function updateCategory(id: number, title: string) {
+    return await axiosInstance.put(CATEGORIES_URL, {id, title})
+}

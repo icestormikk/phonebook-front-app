@@ -1,27 +1,65 @@
-import React, {FormEvent, Fragment} from 'react';
+import React, {FormEvent, Fragment, ReactNode} from 'react';
 import {BiSearchAlt} from "react-icons/bi";
+import SearchBar from "./SearchBar";
+import {BsTrash} from "react-icons/bs";
+import ModalWindow from "./modal/ModalWindow";
+import {AiFillEdit} from "react-icons/ai";
 
 interface DynamicTableProps {
     source: Array<any>,
     onDelete: (...args: Array<any>) => any,
-    onAdd: (event: FormEvent<HTMLFormElement>) => any
-    inputFields: Array<JSX.Element>,
-    searchableFieldTitles: Array<string>
+    onAdd: (event: FormEvent<HTMLFormElement>) => Promise<any>,
+    onAddError: string|undefined,
+    onAddForm?: JSX.Element,
+    onEdit: (event: FormEvent<HTMLFormElement>) => Promise<any>,
+    onEditError: string|undefined,
+    onEditForm?: JSX.Element,
+    inputFields: (source: any) => Array<JSX.Element>,
+    searchableFieldTitles: Array<string>,
+    specialFieldHandlers?: Array<{name: string, handler: (value: any) => ReactNode|string}>
 }
 
-function DynamicTable({source, onDelete, onAdd, inputFields, searchableFieldTitles}: DynamicTableProps) {
+/**
+ * A dynamically changing table of entities of the specified type. The basic component
+ * for all tables in this application
+ * @param source list of entities to display information about
+ * @param onDelete a function performed during the deletion of an entity
+ * @param onAdd a function performed during the creation of a new entity
+ * @param onEdit a function performed during the change of entity parameters
+ * @param onAddForm custom form for adding a new entity
+ * @param inputFields a set of fields for entering information about a new or editable entity
+ * @param searchableFieldTitles names of fields that are allowed to search through the search bar
+ * @param specialFieldHandlers a special handler for displaying information in a specific field
+ * @param onAddError error message that occurred while adding a new entity
+ * @param onEditError error message that occurred while changing entity parameters
+ * @param onEditForm custom form for changing entity parameters
+ * @constructor
+ */
+function DynamicTable({
+    source, onDelete, onAdd, onEdit, onAddForm, inputFields, searchableFieldTitles, specialFieldHandlers,
+    onAddError, onEditError, onEditForm
+}: DynamicTableProps) {
     const [isAddingEntity, setIsAddingEntity] = React.useState(false)
+    const [isEditingEntity, setIsEditingEntity] = React.useState(false)
+    const [entityToEdit, setEntityToEdit] = React.useState<any>()
     const [selectedField, setSelectedField] = React.useState(searchableFieldTitles[0])
     const [updatedSource, setUpdatedSource] = React.useState(source)
 
     const refreshData = React.useCallback(
         (value: string) => {
             if (value.length === 0) {
-                return source
+                setUpdatedSource(source)
             }
-            return source.filter((el) => `${el[selectedField]}`.includes(value))
+            setUpdatedSource(source.filter((el) => `${el[selectedField]}`.includes(value)))
         },
         [selectedField, source]
+    )
+
+    React.useEffect(
+        () => {
+            refreshData('')
+        },
+        [source]
     )
 
     return (
@@ -38,34 +76,89 @@ function DynamicTable({source, onDelete, onAdd, inputFields, searchableFieldTitl
                     }
                 </button>
                 {
+                    isEditingEntity && (
+                        <ModalWindow
+                            isOpen={isEditingEntity}
+                            setIsOpen={setIsEditingEntity}
+                            title="Изменение параметров сущности"
+                            content={(
+                                onEditForm ? (
+                                    onEditForm
+                                ) : (
+                                    <form className="p-2" onSubmit={(e) => {
+                                        onEdit(e)
+                                            .then(() => {
+                                                setIsEditingEntity(onEditError !== undefined)
+                                            })
+                                    }}>
+                                        <div>
+                                            {
+                                                inputFields(entityToEdit).map((el, index) => (
+                                                    <Fragment key={index}>{el}</Fragment>
+                                                ))
+                                            }
+                                            <input type="hidden" name="id" id="id" value={entityToEdit.id}/>
+                                            {
+                                                onEditError && (
+                                                    <span className="error-text">{onEditError}</span>
+                                                )
+                                            }
+                                        </div>
+                                        <input type="submit" value="Применить"/>
+                                    </form>
+                                )
+                            )}
+                        />
+                    )
+                }
+                {
                     isAddingEntity && (
-                        <form onSubmit={(event) => {
-                            event.preventDefault()
-                            onAdd(event)
-                        }}>
-                            <div>
-                                {inputFields.map((el, index) => (
-                                    <Fragment key={index}>{el}</Fragment>
-                                ))}
-                            </div>
-                            <input type="submit" value="Применить"/>
-                        </form>
+                        onAddForm ? (
+                            onAddForm
+                        ) : (
+                            <form onSubmit={(event) => {
+                                onAdd(event)
+                                    .then(() => {
+                                        setIsEditingEntity(false)
+                                        setEntityToEdit(undefined)
+                                    })
+                            }}>
+                                <div>
+                                    {
+                                        inputFields(undefined).map((el, index) => (
+                                            <Fragment key={index}>{el}</Fragment>
+                                        ))
+                                    }
+                                </div>
+                                <input type="submit" value="Применить"/>
+                                {
+                                    onAddError && (
+                                        <span className="error-text">{onAddError}</span>
+                                    )
+                                }
+                            </form>
+                        )
                     )
                 }
             </div>
+            <SearchBar fieldTitle={""} onSearch={refreshData}/>
             {
-                source.length !== 0 ? (
+                updatedSource.length !== 0 ? (
                     <table className="w-full text-xl bordered shadow-md text-center">
                         <tbody className="rounded-md overflow-hidden">
                         <tr>
                             {
-                                Object.keys(source[0])
-                                    .filter((key) => source[0][key] === null || typeof source[0][key] !== 'object')
+                                Object.keys(updatedSource[0])
+                                    .filter((key) => updatedSource[0][key] === null || typeof updatedSource[0][key] !== 'object')
                                     .map((key, index) => (
                                             <th
                                                 key={index}
                                                 className={"table-subheader " + (selectedField === key ? "bg-green-500/30" : "")}
-                                                onClick={() => setSelectedField(key)}
+                                                onClick={() => {
+                                                    if (searchableFieldTitles.includes(key)) {
+                                                        setSelectedField(key)
+                                                    }
+                                                }}
                                             >
                                                 {key}
                                                 {
@@ -81,14 +174,22 @@ function DynamicTable({source, onDelete, onAdd, inputFields, searchableFieldTitl
                             }
                         </tr>
                         {
-                            source.map((obj, index) => (
+                            updatedSource.map((obj, index) => (
                                 <tr key={index}>
                                     {
                                         Object.keys(obj)
-                                            .filter((key) => source[0][key] === null || typeof obj[key] !== 'object')
+                                            .filter((key) => {
+                                                return obj[key] === null || typeof obj[key] !== 'object'
+                                            })
                                             .map((key, index) => (
                                                 <td key={index} className={!obj[key] ? "text-gray-400" : ""}>
-                                                    {obj[key] ? obj[key] : 'Отсутствует'}
+                                                    {obj[key] ? (
+                                                        specialFieldHandlers?.find((el) => el.name === key) !== undefined ? (
+                                                            specialFieldHandlers.find((el) => el.name === key)!.handler(obj[key])
+                                                        ) : (
+                                                            obj[key]
+                                                        )
+                                                    ) : 'Отсутствует'}
                                                 </td>
                                             ))
                                     }
@@ -96,13 +197,23 @@ function DynamicTable({source, onDelete, onAdd, inputFields, searchableFieldTitl
                                         <button
                                             type="button"
                                             onClick={
-                                                () => {
-                                                    onDelete(obj.id)
-                                                }
+                                                () => onDelete(obj.id)
                                             }
-                                            className="text-base px-2"
+                                            className="text-xl px-2 font-bold centered"
                                         >
-                                            Delete
+                                            <BsTrash/>
+                                        </button>
+                                    </td>
+                                    <td className="additional-col">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setEntityToEdit(obj)
+                                                setIsEditingEntity(true)
+                                            }}
+                                            className="text-xl px-2 font-bold centered"
+                                        >
+                                            <AiFillEdit/>
                                         </button>
                                     </td>
                                 </tr>

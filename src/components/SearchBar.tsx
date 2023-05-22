@@ -2,10 +2,24 @@ import React from 'react';
 import {BiSearchAlt} from "react-icons/bi";
 
 interface SearchBarProps<T> {
+    /**
+     * Search bar title
+     */
     fieldTitle: string,
+    /**
+     * The function of filtering the list based on the value
+     * entered the search bar
+     * @param value the value from the search bar
+     */
     onSearch: (value: string) => void
 }
 
+/**
+ * A component that represents a search bar. Allows you to filter the list based
+ * on string values of fields
+ * @param props
+ * @constructor
+ */
 function SearchBar(props: SearchBarProps<any>) {
     return (
         <div className="flex flex-row w-full bordered rounded-md bg-white overflow-hidden">
@@ -21,6 +35,7 @@ function SearchBar(props: SearchBarProps<any>) {
                     const value = event.target.value
                     props.onSearch(value)
                 }}
+                defaultValue=""
             />
         </div>
     );

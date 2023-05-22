@@ -1,10 +1,13 @@
-import React, {FormEvent} from 'react';
+import React, {FormEvent, useRef} from 'react';
 import EntityTable from "../EntityTable";
-import {addPerson, deletePersonById, fetchAllPersons} from "../../axios/personQueries";
-import {uploadFile} from "../../axios/filesQueries";
+import {addPerson, deletePersonById, fetchAllPersons, setAvatar, updatePerson} from "../../axios/personQueries";
 
+/**
+ * Component for displaying information about objects of the Person class
+ * @constructor
+ */
 function PersonsTable() {
-    const [selectedFile, setSelectedFile] = React.useState<any|undefined>(undefined)
+    const ref = useRef<HTMLInputElement>()
 
     return (
         <EntityTable
@@ -12,26 +15,75 @@ function PersonsTable() {
             onFetch={fetchAllPersons}
             onDelete={deletePersonById}
             onAdd={async (event: FormEvent<HTMLFormElement>) => {
+                if (!ref.current?.files) { return }
+
                 const target = event.target as typeof event.target & {
                     name: {value: string},
                     surname: {value: string},
-                    patronymic: {value: string}
+                    patronymic: {value: string},
+                    email: {value: string},
+                    isqId: {value: string},
+                    avatar: {value: any}
                 }
                 const data = new FormData()
-                data.append('file', selectedFile)
+                const file = ref.current?.files[0]
+                data.append('avatar', file)
 
-                await addPerson(
-                    target.name.value, target.surname.value, target.patronymic.value
-                )
-                await uploadFile(data)
+                addPerson(
+                    target.name.value, target.surname.value, target.patronymic.value,
+                    target.email.value, target.isqId.value
+                ).then(async (res) => {
+                    if (file) {
+                        await setAvatar(data, res.data.id)
+                    }
+                })
             }}
-            inputFields={[
-                <input type="text" name="name" id="name" placeholder="Имя пользователя"/>,
-                <input type="text" name="surname" id="surname" placeholder="Фамилия"/>,
-                <input type="text" name="patronymic" id="patronymic" placeholder="Отчество (при наличии)"/>,
-                <input type="file" name="avatar" id="avatar" onChange={(event) => setSelectedFile(event.target.value)}/>
+            onEdit={async (event: FormEvent<HTMLFormElement>) => {
+                if (!ref.current?.files) { return }
+
+                const target = event.target as typeof event.target & {
+                    id: {value: number},
+                    name: {value: string},
+                    surname: {value: string},
+                    patronymic: {value: string},
+                    email: {value: string},
+                    isqId: {value: string},
+                    avatar: {value: any}
+                }
+                const data = new FormData()
+                const file = ref.current?.files[0]
+                data.append('avatar', file)
+
+                updatePerson(
+                    target.id.value, target.name.value, target.surname.value,
+                    target.patronymic.value, target.email.value, target.isqId.value
+                ).then(async (res) => {
+                    if (file) {
+                        await setAvatar(data, res.data.id)
+                    }
+            })}}
+            inputFields={(source) => [
+                <input type="text" name="name" id="name" placeholder="Имя пользователя" required defaultValue={source?.name}/>,
+                <input type="text" name="surname" id="surname" placeholder="Фамилия" required defaultValue={source?.surname}/>,
+                <input type="text" name="patronymic" id="patronymic" placeholder="Отчество (при наличии)" defaultValue={source?.patronymic}/>,
+                <input type="email" name="email" id="email" placeholder="E-mail пользователя" required defaultValue={source?.email}/>,
+                <input type="number" name="isqId" id="isqId" placeholder="ISQ ID пользователя" defaultValue={source?.isqId}/>,
+                // @ts-ignore
+                <input ref={ref} type="file" name="avatar" id="avatar"/>,
             ]}
-            searchableFieldTitles={["name", "surname", "patronymic"]}
+            searchableFieldTitles={["name", "surname", "patronymic", "email"]}
+            specialFieldHandlers={[
+                {
+                    name: "avatar",
+                    handler: (value) => {
+                        return <img
+                            src={"http://localhost:8080/files/filename?value=" + value}
+                            alt="avatar"
+                            className="w-40 h-40 rounded-full"
+                        />
+                    }
+                }
+            ]}
         />
     );
 }

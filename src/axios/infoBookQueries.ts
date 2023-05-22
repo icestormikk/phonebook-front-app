@@ -11,16 +11,27 @@ export async function fetchAllInfosWithMoreInfo() {
 }
 
 export async function addInfo(
-    phone: string, email: string, isqID: number, personID: number, categoryID: number, addressID: number
+    phone: string, personID: number, categoryID: number, addressID: number
 ) {
     return await axiosInstance.post(
         INFOS_URL,
         {
-            phone, email, isqID, personID, categoryID, addressID
+            phone, personID, categoryID, addressID
         }
     )
 }
 
 export async function removeInfoById(id: number) {
     return await axiosInstance.delete(INFOS_URL, {params: {id}})
+}
+
+export async function updateInfoEntity(
+    id: number, phone: string, personID: number, categoryID: number, addressID: number
+) {
+    return await axiosInstance.put(
+        INFOS_URL,
+        {
+            id, phone, personID, categoryID, addressID
+        }
+    )
 }

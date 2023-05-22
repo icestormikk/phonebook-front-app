@@ -1,7 +1,11 @@
 import React from 'react';
 import EntityTable from "../EntityTable";
-import {addCategory, fetchAllCategories, removeCategoryById} from "../../axios/categoryQueries";
+import {addCategory, fetchAllCategories, removeCategoryById, updateCategory} from "../../axios/categoryQueries";
 
+/**
+ * Component for displaying information about objects of the Category class
+ * @constructor
+ */
 function CategoriesTable() {
     return (
         <EntityTable
@@ -15,9 +19,17 @@ function CategoriesTable() {
 
                 await addCategory(target.title.value)
             }}
-            inputFields={[
-                <input type="text" name="title" id="title" placeholder="Название категории"/>
+            inputFields={(source) => [
+                <input type="text" name="title" id="title" placeholder="Название категории" required defaultValue={source?.title}/>
             ]}
+            onEdit={async (event) => {
+                const target = event.target as typeof event.target & {
+                    id: {value: number}
+                    title: {value: string}
+                }
+
+                await updateCategory(target.id.value, target.title.value)
+            }}
             searchableFieldTitles={["title"]}
         />
     );

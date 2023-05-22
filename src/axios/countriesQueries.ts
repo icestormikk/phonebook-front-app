@@ -13,3 +13,7 @@ export async function removeCountryById(id: number) {
 export async function addCountry(title: string) {
     return await axiosInstance.post(COUNTRIES_URL, {title})
 }
+
+export async function updateCountry(id: number, title: string) {
+    return await axiosInstance.put(COUNTRIES_URL, {id, title})
+}

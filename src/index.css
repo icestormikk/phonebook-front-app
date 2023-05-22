@@ -77,7 +77,7 @@
         @apply
         py-2 mt-2
     }
-    form div {
+    form > div {
         @apply
         mb-2 flex flex-col gap-2
     }
@@ -91,7 +91,7 @@
     }
     form label {
         @apply
-        flex justify-between
+        flex justify-between gap-2
     }
 
     input {
@@ -151,7 +151,7 @@
     }
     .additional-col button {
         @apply
-        w-full
+        text-xl px-2 font-bold centered w-full
     }
     .additional-col:hover {
         @apply
@@ -189,6 +189,10 @@
         @apply
         absolute w-full h-full centered top-0 left-0 font-bold flex items-center
         justify-end text-xl
+    }
+    .error-text {
+        @apply
+        text-red-500 font-bold
     }
 }
 
