@@ -14,6 +14,9 @@ interface DynamicTableProps {
     onEdit: (event: FormEvent<HTMLFormElement>) => Promise<any>,
     onEditError: string|undefined,
     onEditForm?: JSX.Element,
+    onSpecialSearch?: (event: FormEvent<HTMLFormElement>) => Promise<any>,
+    onSearchError?: string,
+    searchFormFields?: Array<JSX.Element>,
     inputFields: (source: any) => Array<JSX.Element>,
     searchableFieldTitles: Array<string>,
     specialFieldHandlers?: Array<{name: string, handler: (value: any) => ReactNode|string}>
@@ -33,11 +36,15 @@ interface DynamicTableProps {
  * @param onAddError error message that occurred while adding a new entity
  * @param onEditError error message that occurred while changing entity parameters
  * @param onEditForm custom form for changing entity parameters
+ * @param onSpecialSearch a function that performs a specific search on some entity fields
+ * @param searchFormFields fields from which the {@link onSpecialSearch} function takes values
+ * @param onSearchError the text of the error that may occur during the execution of the
+ * {@link onSpecialSearch} function
  * @constructor
  */
 function DynamicTable({
     source, onDelete, onAdd, onEdit, onAddForm, inputFields, searchableFieldTitles, specialFieldHandlers,
-    onAddError, onEditError, onEditForm
+    onAddError, onEditError, onEditForm, onSpecialSearch, searchFormFields, onSearchError
 }: DynamicTableProps) {
     const [isAddingEntity, setIsAddingEntity] = React.useState(false)
     const [isEditingEntity, setIsEditingEntity] = React.useState(false)
@@ -138,6 +145,29 @@ function DynamicTable({
                                 }
                             </form>
                         )
+                    )
+                }
+                {
+                    onSpecialSearch && (
+                        <form onSubmit={onSpecialSearch} className="flex gap-2">
+                            {
+                                searchFormFields && (
+                                    <>
+                                        {
+                                            searchFormFields.map((field, index) => (
+                                                <Fragment key={index}>{field}</Fragment>
+                                            ))
+                                        }
+                                        <input type="submit" value="Применить"/>
+                                    </>
+                                )
+                            }
+                            {
+                                onSearchError && (
+                                    <span className="error-text">{onSearchError}</span>
+                                )
+                            }
+                        </form>
                     )
                 }
             </div>

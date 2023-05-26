@@ -3,7 +3,7 @@ import EntityTable from "../EntityTable";
 import {
     addInfo,
     fetchAllInfos,
-    fetchAllInfosWithMoreInfo,
+    fetchAllInfosWithMoreInfo, fetchInfosByInitials,
     removeInfoById,
     updateInfoEntity
 } from "../../axios/infoBookQueries";
@@ -146,6 +146,36 @@ function InfoBookTable() {
                         target.id.value, target.phone.value, target.personID.value, target.categoryID.value, target.addressID.value
                     )
                 }}
+                onSearch={async (event) => {
+                    const target = event.target as typeof event.target & {
+                        name: {value: string},
+                        surname: {value: string},
+                        patronymic: {value: string},
+                        category: {value: string}
+                    }
+                    const isEmpty = target.name.value.length + target.surname.value.length
+                        + target.patronymic.value.length === 0
+
+                    if (isEmpty) {
+                        return await fetchAllInfos()
+                    }
+
+                    return await fetchInfosByInitials(
+                        target.name.value, target.surname.value, target.patronymic.value, target.category.value
+                    )
+                }}
+                updateFormFields={[
+                    <input type="text" name="name" id="name" placeholder="Введите имя"/>,
+                    <input type="text" name="surname" id="surname" placeholder="Введите фамилию"/>,
+                    <input type="text" name="patronymic" id="patronymic" placeholder="Введите отчество"/>,
+                    <select name="category" id="category">
+                        {
+                            categories.map((category, index) => (
+                                <option value={category.title} key={index}>{category.title}</option>
+                            ))
+                        }
+                    </select>
+                ]}
                 searchableFieldTitles={["phoneNumber"]}
             />
         </div>

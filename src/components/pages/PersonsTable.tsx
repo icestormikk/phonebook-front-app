@@ -1,6 +1,13 @@
 import React, {FormEvent, useRef} from 'react';
 import EntityTable from "../EntityTable";
-import {addPerson, deletePersonById, fetchAllPersons, setAvatar, updatePerson} from "../../axios/personQueries";
+import {
+    addPerson,
+    deletePersonById,
+    fetchAllPersons,
+    fetchPersonByPhone,
+    setAvatar,
+    updatePerson
+} from "../../axios/personQueries";
 
 /**
  * Component for displaying information about objects of the Person class
@@ -62,6 +69,20 @@ function PersonsTable() {
                         await setAvatar(data, res.data.id)
                     }
             })}}
+            onSearch={async (event: FormEvent<HTMLFormElement>) => {
+                const target = event.target as typeof event.target & {
+                    phone: {value: string}
+                }
+
+                if (target.phone.value.length === 0) {
+                    return await fetchAllPersons()
+                }
+
+                return await fetchPersonByPhone(target.phone.value)
+            }}
+            updateFormFields={[
+                <input type="tel" name="phone" id="phone" placeholder="Введите номер телефона"/>
+            ]}
             inputFields={(source) => [
                 <input type="text" name="name" id="name" placeholder="Имя пользователя" required defaultValue={source?.name}/>,
                 <input type="text" name="surname" id="surname" placeholder="Фамилия" required defaultValue={source?.surname}/>,

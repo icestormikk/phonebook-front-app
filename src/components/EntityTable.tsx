@@ -8,6 +8,8 @@ interface EntityTableProps {
     onDelete: (...args: Array<any>) => Promise<AxiosResponse<any, any>>,
     onAdd?: (event: FormEvent<HTMLFormElement>) => Promise<any>,
     onEdit?: (event: FormEvent<HTMLFormElement>) => Promise<any>,
+    onSearch?: (event: FormEvent<HTMLFormElement>) => Promise<AxiosResponse<any>>,
+    updateFormFields?: Array<JSX.Element>,
     onAddForm?: JSX.Element,
     onEditForm?: JSX.Element,
     inputFields: (source: any) => Array<JSX.Element>,
@@ -28,6 +30,7 @@ function EntityTable(props: EntityTableProps) {
     const [entities, setEntities] = React.useState<Array<any>>([])
     const [onAddError, setOnAddError] = React.useState<string|undefined>(undefined)
     const [onEditError, setOnEditError] = React.useState<string|undefined>(undefined)
+    const [onSearchError, setOnSearchError] = React.useState<string|undefined>(undefined)
 
     React.useEffect(
         () => {
@@ -106,6 +109,28 @@ function EntityTable(props: EntityTableProps) {
         [props.onFetch]
     )
 
+    const onSpecialSearch = React.useCallback(
+        async (event: FormEvent<HTMLFormElement>) => {
+            event.preventDefault()
+            if (!props.onSearch) {return}
+
+            await props.onSearch(event)
+                .then((res) => {
+                    setOnSearchError(undefined)
+                    const result = res.data
+                    if (result instanceof Array) {
+                        setEntities(result)
+                    } else {
+                        setEntities([result])
+                    }
+                })
+                .catch(() => {
+                    setOnSearchError("Объектов, подходящих под запрос, не найдено!")
+                })
+        },
+        [props.onSearch]
+    )
+
     return (
         <>
             <p className="table-header">{props.title}</p>
@@ -120,6 +145,9 @@ function EntityTable(props: EntityTableProps) {
                             onAddError={onAddError}
                             onEdit={updateAndRefreshData}
                             onEditError={onEditError}
+                            onSpecialSearch={onSpecialSearch}
+                            searchFormFields={props.updateFormFields}
+                            onSearchError={onSearchError}
                             onAddForm={props.onAddForm}
                             onEditForm={props.onEditForm}
                             searchableFieldTitles={props.searchableFieldTitles}

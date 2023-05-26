@@ -10,6 +10,12 @@ export async function fetchAllInfosWithMoreInfo() {
     return await axiosInstance.get(INFOS_URL, {params: {withMoreInfo: true}})
 }
 
+export async function fetchInfosByInitials(
+    name: string, surname: string, patronymic: string, category: string
+) {
+    return await axiosInstance.get(INFOS_URL + '/initials', {params: {name, surname, patronymic, category}})
+}
+
 export async function addInfo(
     phone: string, personID: number, categoryID: number, addressID: number
 ) {

@@ -6,6 +6,10 @@ export async function fetchAllPersons() {
     return await axiosInstance.get<Array<any>>(PERSONS_URL)
 }
 
+export async function fetchPersonByPhone(phone: string) {
+    return await axiosInstance.get(PERSONS_URL + '/phone', {params: {value: phone}})
+}
+
 export async function deletePersonById(id: number) {
     return await axiosInstance.delete(PERSONS_URL, {params: {id}})
 }
