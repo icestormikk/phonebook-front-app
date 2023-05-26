@@ -36,7 +36,7 @@ function PersonsTable() {
                 const file = ref.current?.files[0]
                 data.append('avatar', file)
 
-                addPerson(
+                await addPerson(
                     target.name.value, target.surname.value, target.patronymic.value,
                     target.email.value, target.isqId.value
                 ).then(async (res) => {
