@@ -99,7 +99,7 @@ function PersonsTable() {
                     handler: (value) => {
                         return <img
                             src={"http://localhost:8080/files/filename?value=" + value}
-                            alt="avatar"
+                            alt="Аватар пользователя"
                             className="w-40 h-40 rounded-full"
                         />
                     }
