@@ -92,7 +92,7 @@ function PersonsTable() {
                 // @ts-ignore
                 <input ref={ref} type="file" name="avatar" id="avatar"/>,
             ]}
-            searchableFieldTitles={["name", "surname", "patronymic", "email"]}
+            searchableFieldTitles={["name", "surname", "patronymic", "email", "isqId"]}
             specialFieldHandlers={[
                 {
                     name: "avatar",
