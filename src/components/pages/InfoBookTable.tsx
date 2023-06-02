@@ -10,6 +10,7 @@ import {
 import {fetchAllPersons} from "../../axios/personQueries";
 import {fetchAllCategories} from "../../axios/categoryQueries";
 import {fetchAllAddressesWithTitles} from "../../axios/addressesQueries";
+import {fetchAllTypes} from "../../axios/phoneTypeQueries";
 
 /**
  * Component for displaying information about objects of the InfoBook class
@@ -19,6 +20,7 @@ function InfoBookTable() {
     const [persons, setPersons] = React.useState<Array<any>>([])
     const [categories, setCategories] = React.useState<Array<any>>([])
     const [addresses, setAddresses] = React.useState<Array<any>>([])
+    const [phoneTypes, setPhoneTypes] = React.useState<Array<any>>([])
     const [viewMode, setViewMode] = React.useState<"id"|"all">("id")
 
     const fetchPersons = async () => {
@@ -42,6 +44,13 @@ function InfoBookTable() {
             })
     }
 
+    const fetchPhoneTypes = async () => {
+        fetchAllTypes()
+            .then((res) => {
+                setPhoneTypes(res.data)
+            })
+    }
+
     React.useEffect(
         () => {
             fetchPersons()
@@ -49,6 +58,8 @@ function InfoBookTable() {
             fetchCategories()
                 .then(() => {})
             fetchAddresses()
+                .then(() => {})
+            fetchPhoneTypes()
                 .then(() => {})
         },
         []
@@ -116,12 +127,24 @@ function InfoBookTable() {
                                 ))
                             }
                         </select>
+                    </label>,
+                    <label htmlFor="phoneTypeID">
+                        Тип номера:
+                        <select name="phoneTypeID" id="phoneTypeID" required defaultValue={source?.phoneType}>
+                            {
+                                phoneTypes.map((type, index) => (
+                                    <option key={index} value={type.id}>
+                                        {type.title}
+                                    </option>
+                                ))
+                            }
+                        </select>
                     </label>
                 ]}
                 onAdd={async (event) => {
                     const target = event.target as typeof event.target & {
                         phone: {value: string}, personID: {value: number}, categoryID: {value: number},
-                        addressID: {value: number}
+                        addressID: {value: number}, phoneTypeID: {value: number}
                     }
 
                     if (target.personID.value === undefined || target.categoryID.value === undefined || target.addressID.value === undefined) {
@@ -129,13 +152,14 @@ function InfoBookTable() {
                     }
 
                     await addInfo(
-                        target.phone.value, target.personID.value, target.categoryID.value, target.addressID.value
+                        target.phone.value, target.personID.value, target.categoryID.value, target.addressID.value,
+                        target.phoneTypeID.value
                     )
                 }}
                 onEdit={async (event) => {
                     const target = event.target as typeof event.target & {
                         id: {value: number}, phone: {value: string}, personID: {value: number},
-                        categoryID: {value: number}, addressID: {value: number}
+                        categoryID: {value: number}, addressID: {value: number}, phoneTypeID: {value: number}
                     }
 
                     if (target.personID.value === undefined || target.categoryID.value === undefined || target.addressID.value === undefined) {
@@ -143,7 +167,8 @@ function InfoBookTable() {
                     }
 
                     await updateInfoEntity(
-                        target.id.value, target.phone.value, target.personID.value, target.categoryID.value, target.addressID.value
+                        target.id.value, target.phone.value, target.personID.value, target.categoryID.value, target.addressID.value,
+                        target.phoneTypeID.value
                     )
                 }}
                 onSearch={async (event) => {

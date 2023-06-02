@@ -10,6 +10,7 @@ import CountriesTable from "./components/pages/address/CountriesTable";
 import InfoBookTable from "./components/pages/InfoBookTable";
 import PhoneHistoryTable from "./components/pages/PhoneHistoryTable";
 import Main from "./components/pages/Main";
+import PhoneTypeTable from "./components/pages/PhoneTypeTable";
 
 function App() {
     return (
@@ -30,6 +31,7 @@ function App() {
                     </Route>
                     <Route path="/infos">
                         <Route index element={(<InfoBookTable/>)}/>
+                        <Route path="types" element={(<PhoneTypeTable/>)}/>
                         <Route path="history" element={(<PhoneHistoryTable/>)}/>
                     </Route>
                     <Route

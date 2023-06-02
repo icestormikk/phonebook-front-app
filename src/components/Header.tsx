@@ -44,6 +44,10 @@ function Header() {
                     address: '/infos',
                     variants: [
                         {
+                            title: 'Типы телефонов',
+                            subAddress: '/types'
+                        },
+                        {
                             title: 'История изменений',
                             subAddress: '/history'
                         }

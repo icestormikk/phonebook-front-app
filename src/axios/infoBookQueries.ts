@@ -17,12 +17,12 @@ export async function fetchInfosByInitials(
 }
 
 export async function addInfo(
-    phone: string, personID: number, categoryID: number, addressID: number
+    phoneNumber: string, personID: number, categoryID: number, addressID: number, phoneTypeID: number
 ) {
     return await axiosInstance.post(
         INFOS_URL,
         {
-            phone, personID, categoryID, addressID
+            phoneNumber, personID, categoryID, addressID, phoneTypeID
         }
     )
 }
@@ -32,12 +32,12 @@ export async function removeInfoById(id: number) {
 }
 
 export async function updateInfoEntity(
-    id: number, phone: string, personID: number, categoryID: number, addressID: number
+    id: number, phoneNumber: string, personID: number, categoryID: number, addressID: number, phoneTypeID: number
 ) {
     return await axiosInstance.put(
         INFOS_URL,
         {
-            id, phone, personID, categoryID, addressID
+            id, phoneNumber, personID, categoryID, addressID, phoneTypeID
         }
     )
 }

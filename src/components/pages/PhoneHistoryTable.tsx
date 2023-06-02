@@ -4,6 +4,7 @@ import {fetchEntireHistory} from "../../axios/phoneHistoryQueries";
 import {AiOutlineClockCircle} from "react-icons/ai";
 import {ImCheckmark} from "react-icons/im";
 import SearchBar from "../SearchBar";
+import {fetchAllTypes} from "../../axios/phoneTypeQueries";
 
 /**
  * Component for displaying information about objects of the PhoneHistory class
@@ -12,6 +13,7 @@ import SearchBar from "../SearchBar";
 function PhoneHistoryTable() {
     const [persons, setPersons] = React.useState<Array<any>>([])
     const [history, setHistory] = React.useState<Array<any>>([])
+    const [types, setTypes] = React.useState<Array<any>>([])
     const [updatedHistory, setUpdatedHistory] = React.useState<Array<any>>([...history])
 
     const fetchPersons = async () => {
@@ -24,6 +26,13 @@ function PhoneHistoryTable() {
         fetchEntireHistory()
             .then((res) => {
                 setHistory(res.data)
+            })
+    }
+
+    const fetchTypes = async () => {
+        fetchAllTypes()
+            .then((res) => {
+                setTypes(res.data)
             })
     }
 
@@ -41,6 +50,7 @@ function PhoneHistoryTable() {
         () => {
             fetchPersons().then(() => {})
             fetchHistory().then(() => {})
+            fetchTypes().then(() => {})
         },
         []
     )
@@ -68,7 +78,10 @@ function PhoneHistoryTable() {
                                             key={index}
                                             className="flex flex-row gap-2 justify-between hover:bg-gray-200 px-2"
                                         >
-                                            <b>{entity.phone}</b>
+                                            <div className="flex justify-between items-center w-[14em]">
+                                                <b>{entity.phone}</b>
+                                                <b>{types.find((el) => el.id === entity.phoneType)?.title}</b>
+                                            </div>
                                             <div className="centered flex-row gap-2">
                                                 {
                                                     entity.endDate !== null ? (
