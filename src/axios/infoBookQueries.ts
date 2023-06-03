@@ -11,18 +11,18 @@ export async function fetchAllInfosWithMoreInfo() {
 }
 
 export async function fetchInfosByInitials(
-    name: string, surname: string, patronymic: string, category: string
+    name: string, surname: string, patronymic: string, categoryId: number
 ) {
-    return await axiosInstance.get(INFOS_URL + '/initials', {params: {name, surname, patronymic, category}})
+    return await axiosInstance.get(INFOS_URL + '/initials', {params: {name, surname, patronymic, categoryId}})
 }
 
 export async function addInfo(
-    phoneNumber: string, personID: number, categoryID: number, addressID: number, phoneTypeID: number
+    phoneNumber: string, personID: number, phoneTypeID: number
 ) {
     return await axiosInstance.post(
         INFOS_URL,
         {
-            phoneNumber, personID, categoryID, addressID, phoneTypeID
+            phoneNumber, personID, phoneTypeID
         }
     )
 }
@@ -32,12 +32,12 @@ export async function removeInfoById(id: number) {
 }
 
 export async function updateInfoEntity(
-    id: number, phoneNumber: string, personID: number, categoryID: number, addressID: number, phoneTypeID: number
+    id: number, phoneNumber: string, personID: number, phoneTypeID: number
 ) {
     return await axiosInstance.put(
         INFOS_URL,
         {
-            id, phoneNumber, personID, categoryID, addressID, phoneTypeID
+            id, phoneNumber, personID, phoneTypeID
         }
     )
 }

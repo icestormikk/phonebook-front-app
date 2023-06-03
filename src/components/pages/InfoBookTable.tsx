@@ -9,7 +9,6 @@ import {
 } from "../../axios/infoBookQueries";
 import {fetchAllPersons} from "../../axios/personQueries";
 import {fetchAllCategories} from "../../axios/categoryQueries";
-import {fetchAllAddressesWithTitles} from "../../axios/addressesQueries";
 import {fetchAllTypes} from "../../axios/phoneTypeQueries";
 
 /**
@@ -19,7 +18,6 @@ import {fetchAllTypes} from "../../axios/phoneTypeQueries";
 function InfoBookTable() {
     const [persons, setPersons] = React.useState<Array<any>>([])
     const [categories, setCategories] = React.useState<Array<any>>([])
-    const [addresses, setAddresses] = React.useState<Array<any>>([])
     const [phoneTypes, setPhoneTypes] = React.useState<Array<any>>([])
     const [viewMode, setViewMode] = React.useState<"id"|"all">("id")
 
@@ -37,13 +35,6 @@ function InfoBookTable() {
             })
     }
 
-    const fetchAddresses = async () => {
-        fetchAllAddressesWithTitles()
-            .then((res) => {
-                setAddresses(res.data)
-            })
-    }
-
     const fetchPhoneTypes = async () => {
         fetchAllTypes()
             .then((res) => {
@@ -56,8 +47,6 @@ function InfoBookTable() {
             fetchPersons()
                 .then(() => {})
             fetchCategories()
-                .then(() => {})
-            fetchAddresses()
                 .then(() => {})
             fetchPhoneTypes()
                 .then(() => {})
@@ -102,32 +91,6 @@ function InfoBookTable() {
                             }
                         </select>
                     </label>,
-                    <label htmlFor="addressID">
-                        Адрес:
-                        <select name="addressID" id="addressID" required defaultValue={source?.addressID}>
-                            {
-                                addresses.map((address, index) => (
-                                    <option key={index} value={address.id}>
-                                        {`${address.country}, г.${address.city}, ул.${address.street}, ` +
-                                            `д.${address.houseNumber}` + (address.flatNumber ? `, кв. ${address.flatNumber}` : '')
-                                        }
-                                    </option>
-                                ))
-                            }
-                        </select>
-                    </label>,
-                    <label htmlFor="categoryID">
-                        Категория:
-                        <select name="categoryID" id="categoryID" required defaultValue={source?.categoryID}>
-                            {
-                                categories.map((category, index) => (
-                                    <option key={index} value={category.id}>
-                                        {category.title}
-                                    </option>
-                                ))
-                            }
-                        </select>
-                    </label>,
                     <label htmlFor="phoneTypeID">
                         Тип номера:
                         <select name="phoneTypeID" id="phoneTypeID" required defaultValue={source?.phoneType}>
@@ -143,32 +106,28 @@ function InfoBookTable() {
                 ]}
                 onAdd={async (event) => {
                     const target = event.target as typeof event.target & {
-                        phone: {value: string}, personID: {value: number}, categoryID: {value: number},
-                        addressID: {value: number}, phoneTypeID: {value: number}
+                        phone: {value: string}, personID: {value: number}, phoneTypeID: {value: number}
                     }
 
-                    if (target.personID.value === undefined || target.categoryID.value === undefined || target.addressID.value === undefined) {
+                    if (target.personID.value === undefined) {
                         return
                     }
 
                     await addInfo(
-                        target.phone.value, target.personID.value, target.categoryID.value, target.addressID.value,
-                        target.phoneTypeID.value
+                        target.phone.value, target.personID.value, target.phoneTypeID.value
                     )
                 }}
                 onEdit={async (event) => {
                     const target = event.target as typeof event.target & {
-                        id: {value: number}, phone: {value: string}, personID: {value: number},
-                        categoryID: {value: number}, addressID: {value: number}, phoneTypeID: {value: number}
+                        id: {value: number}, phone: {value: string}, personID: {value: number}, phoneTypeID: {value: number}
                     }
 
-                    if (target.personID.value === undefined || target.categoryID.value === undefined || target.addressID.value === undefined) {
+                    if (target.personID.value === undefined) {
                         return
                     }
 
                     await updateInfoEntity(
-                        target.id.value, target.phone.value, target.personID.value, target.categoryID.value, target.addressID.value,
-                        target.phoneTypeID.value
+                        target.id.value, target.phone.value, target.personID.value, target.phoneTypeID.value
                     )
                 }}
                 onSearch={async (event) => {
@@ -176,7 +135,7 @@ function InfoBookTable() {
                         name: {value: string},
                         surname: {value: string},
                         patronymic: {value: string},
-                        category: {value: string}
+                        categoryId: {value: number}
                     }
                     const isEmpty = target.name.value.length + target.surname.value.length
                         + target.patronymic.value.length === 0
@@ -186,17 +145,17 @@ function InfoBookTable() {
                     }
 
                     return await fetchInfosByInitials(
-                        target.name.value, target.surname.value, target.patronymic.value, target.category.value
+                        target.name.value, target.surname.value, target.patronymic.value, target.categoryId.value
                     )
                 }}
                 updateFormFields={[
                     <input type="text" name="name" id="name" placeholder="Введите имя"/>,
                     <input type="text" name="surname" id="surname" placeholder="Введите фамилию"/>,
                     <input type="text" name="patronymic" id="patronymic" placeholder="Введите отчество"/>,
-                    <select name="category" id="category">
+                    <select name="categoryId" id="categoryId">
                         {
                             categories.map((category, index) => (
-                                <option value={category.title} key={index}>{category.title}</option>
+                                <option value={category.id} key={index}>{category.title}</option>
                             ))
                         }
                     </select>
